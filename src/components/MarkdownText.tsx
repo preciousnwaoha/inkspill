@@ -1,4 +1,4 @@
-import React, {useState} from "react"
+import React, {useState, useEffect} from "react"
 import Box from "@mui/material/Box"
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/store";
@@ -11,14 +11,29 @@ import { appActions } from "@/store/app-slice";
 
 const MarkdownText = () => {
     const dispatch = useDispatch()
-    const app = useSelector((state: RootState) => state.app)
-    const {markdown} = app
+    // const app = useSelector((state: RootState) => state.app)
+    // const {markdown} = app
+    const [markdownText, setMarkdownText] = useState<string>("")
+    // const [timer, setTimer] = useState(0)
 
 
     const handleChange = (event: any) => {
-        // setMarkdownInput(event.target.value)
-        dispatch(appActions.updateMarkdown({text: event.target.value}))
+        setMarkdownText(event.target.value)
+        // setTimer(3000)
     }
+
+    useEffect(() => {
+        // if (timer === 0) {
+        //     dispatch(appActions.updateMarkdown({text: markdownText}))
+        // } else {
+        //     setTimeout(() => {
+        //       setTimer(0)  
+        //     }, timer)
+        // }
+
+        dispatch(appActions.updateMarkdown({text: markdownText}))
+       
+    }, [markdownText, dispatch])
 
 
     return<Box sx={{
@@ -30,7 +45,7 @@ const MarkdownText = () => {
         fullWidth
         multiline
         onChange={handleChange}
-        value={markdown.text}
+        value={markdownText}
     />
         </Box>
 }

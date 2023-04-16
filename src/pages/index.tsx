@@ -20,7 +20,7 @@ export default function Home() {
       <Navbar />
       <Box component="main" sx={{
         mt: "50px",
-        height: { xs: "auto", md: "calc(100vh - 50px)"},
+        height: { xs: "auto", sm: "calc(100vh - 50px)", md: "calc(100vh - 50px)"},
         overflow: {xs: "auto", md: "hidden"},
       }}>
         

@@ -6,6 +6,12 @@ import { Configuration, OpenAIApi } from "openai";
 //   name: string
 // }
 
+type ContributorType = {
+  name: string;
+  link?: string;
+  role?: string;
+}
+
 
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
@@ -22,11 +28,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     return;
   }
 
-  const animal = req.body.animal || '';
-  if (animal.trim().length === 0) {
+  const description = req.body.description || '';
+  const screenshots = req.body.screenshots;
+  const projectType = req.body.projectType || '';
+  const projectLink = req.body.projectLink;
+  const isOpenSource = req.body.isOpenSource;
+  const license = req.body.license || "";
+  const contributors = req.body.contributors;
+  const contactInfo = req.body.contactInfo;
+  const mustInclude = req.body.sections;
+
+
+  // console.log({body: req.body})
+  if (description.trim().length === 0) {
     res.status(400).json({
       error: {
-        message: "Please enter a valid animal",
+        message: "Please enter a valid project description",
       }
     });
     return;
@@ -35,8 +52,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   try {
     const completion = await openai.createCompletion({
       model: "text-davinci-003",
-      prompt: generatePrompt(animal),
-    max_tokens: 2000,
+      prompt: generatePrompt(description, projectType, screenshots, 
+        license, projectLink, isOpenSource, contributors, contactInfo, mustInclude ),
+    max_tokens: 3500,
       temperature: 0.6,
     });
     res.status(200).json({ result: completion.data.choices[0].text });
@@ -56,9 +74,36 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   }
 }
 
-function generatePrompt(animal: string) {
-  const capitalizedAnimal =
-    animal[0].toUpperCase() + animal.slice(1).toLowerCase();
-  return `${capitalizedAnimal}`;
+
+
+function generatePrompt(description: string, projectType: string, screenshots: string[], 
+  license: string, projectLink: string, isOpenSource: boolean, contributors: ContributorType[], contactInfo: string, mustInclude: string[] ) {
+  const optimizedPrompt =
+    `I need your help to create a README file for my GitHub project. Here are the details:
+
+    - Project Description: ${description}
+    - Project Type: ${projectType}
+    - Screenshots:
+      ${screenshots.map((shot, index) => `- ![Screenshot ${index}](${shot})`).join("\n  ")}
+    - License Type: ${license}
+    - Allow Contributions: ${isOpenSource}
+    - Is Open Source: ${isOpenSource}
+    - Project Link: ${projectLink}
+    - Contributors Data Format:
+      | Name          | Role          | Link                      |
+      |---------------|---------------|---------------------------|
+      
+    - Contact Info: You can reach me at ${contactInfo}
+    - Must Include: ${mustInclude.join(", ")}
+
+    Contributors data: [${contributors.map(contr => `{name: ${contr.name}, role: ${contr.role || ""}, link: ${contr.link || ""}}`).join(", ")}]
+    
+    Please generate a well-formatted README file in Markdown format based on this information. The README should include tagline, table of contents, etc, and required sections for the project.
+`    
+  return `${optimizedPrompt}`;
 }
 
+// The README should include sections for the project description, screenshots, license, contribution guidelines, roadmap, status, contributors, and contact information.
+
+// | John Doe      | Developer     | https://github.com/johndoe|
+      // | Jane Smith    | Documentation | https://github.com/janesmith|

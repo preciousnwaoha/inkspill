@@ -6,36 +6,41 @@ import { RootState } from "@/store";
 import MarkdownText from './MarkdownText';
 import MarkdownRender from './MarkdownRender';
 import MarkdownAI from "./MarkdownAI";
+import EditablePage from './Editor/EditablePage';
 
-// interface MarkdownAreaInterface {
-//     id: string
-// }
-const MarkdownArea = () => {
-  const [useAI, setUseAI] = useState<boolean>(true)
+interface MarkdownAreaInterface {
+    newSelected: number
+}
+const MarkdownArea = ({newSelected}: MarkdownAreaInterface) => {
+  const [useAI, setUseAI] = useState<boolean>(newSelected === 0)
 
-  const handleToggleUseAI = () => {
-    setUseAI(prevState => !prevState)
+  const handleGetMarkdownText = () => {
+    setUseAI(false)
   }
+
+
+
+
 
   return (
     <Grid container sx={{
-      border: "1px solid red",
+      // border: "1px solid red",
       height: "100%",
       // overflow: "hidden"
     }}>
         <Grid item xs={12} sm={6} md={6} sx={{
-          outline: "1px solid blue",
+          // outline: "1px solid blue",
           height: "100%",
-          overflowY: "auto",
+          overflowY: "scroll",
       
         }}>
-        {useAI ? <MarkdownAI /> : <MarkdownText />}
-        {/* <MarkdownText /> */}
+        {useAI ? <MarkdownAI onGetMarkdown={handleGetMarkdownText} /> : <EditablePage />}
+  
         </Grid>
         <Grid item xs={12} sm={6} md={6} sx={{
-          outline: "1px solid red",
+          // outline: "1px solid red",
           height: "100%",
-          overflowY: "auto",
+          overflowY: "scroll",
         }}>
        <MarkdownRender />
         </Grid>

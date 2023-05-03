@@ -10,6 +10,10 @@ export interface appState {
     theme: number,
     ids: string[],
     markdown: MarkdownInterface,
+    templates: {
+        name: string,
+        markdown: string,
+    }[]
 }
 
 const initialState: appState = {
@@ -20,6 +24,7 @@ const initialState: appState = {
         id: "",
         name: "",
     },
+    templates: []
 }
 
 
@@ -37,6 +42,12 @@ const appSlice = createSlice( {
         selectProject(state, action: PayloadAction<{id: string}>) {
             // state.markdown.text =  
             // state.markdown.id =
+        },
+        updateTemplates(state, action: PayloadAction<{
+            name:string,
+            markdown: string
+        }[]>) {
+            state.templates = action.payload
         }
     }
 })

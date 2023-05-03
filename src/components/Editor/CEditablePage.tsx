@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import CEditableBlock from './CEditableBlock';
-import { setCaretToEnd, uid } from '@/utils/helpers';
+import { setCaretToEnd, uid } from '@/utils/editor/helpers';
 
 interface Block {
   id: string;

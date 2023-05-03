@@ -31,10 +31,11 @@ const handleCopy = () => {
   return (
     <AppBar
       sx={{
-        height: "50px",
         bgcolor: "transparent",
+        
       }}
       elevation={0}
+      variant="outlined"
     >
       <Toolbar
         sx={{
@@ -42,18 +43,20 @@ const handleCopy = () => {
           alignItems: "center",
           justifyContent: "space-between",
           width: '100%',
+          // border: "1px solid black"
         }}
       >
         <Box sx={{
             display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
+            alignItems: "center",
+            // border: "1px solid black",
         }}>
           <Box
             sx={{
               position: "relative",
               width: "34px",
               height: "34px",
+              display: "inline-block",
               border: "1px solid red",
               mr: 2,
               "& img": {
@@ -72,9 +75,12 @@ const handleCopy = () => {
             Inkspill
           </Typography>
         </Box>
-
+          
+          
         <Box>
-          <Button variant="contained" onClick={handleCopy} disabled={copied}>{copied ? "COPIED" : "COPY README"}</Button>
+
+          
+          {/* <Button variant="contained" onClick={handleCopy} disabled={copied}>{copied ? "COPIED" : "COPY README"}</Button> */}
         </Box>
       </Toolbar>
     </AppBar>

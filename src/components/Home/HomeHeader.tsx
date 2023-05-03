@@ -8,6 +8,7 @@ import IconButton from "@mui/material/IconButton";
 import Button from "@mui/material/Button";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/store";
+import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
 
 
 const HomeHeader = () => {
@@ -67,7 +68,9 @@ const HomeHeader = () => {
           
           <IconButton sx={{
             display: {md: "inline-flex", lg: "none" }
-          }}>Menu</IconButton>
+          }}>
+            <MenuRoundedIcon />
+          </IconButton>
 
 <Button variant="text" onClick={handleCreateNew} sx={{
             display: {md: "none", lg: "inline-flex" },

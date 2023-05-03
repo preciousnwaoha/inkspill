@@ -1,0 +1,12 @@
+{
+    "templates": [
+        {
+            "name": "Web/App README",
+            "markdown": ""
+        },
+        {
+            "name": "Profile README",
+            "markdown": ""
+        }
+    ]
+}

@@ -56,7 +56,11 @@ type ContributorType = {
     role?: string;
 }
 
-const MarkdownAI = () => {
+interface MarkdownAIInterface {
+  onGetMarkdown: () => void
+}
+
+const MarkdownAI = ({onGetMarkdown}: MarkdownAIInterface) => {
     const dispatch = useDispatch()
     const app = useSelector((state: RootState) => state.app)
     const {markdown} = app

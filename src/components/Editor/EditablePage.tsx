@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import EditableBlock from './EditableBlock';
-import { setCaretToEnd, uid } from '@/utils/helpers';
+import { setCaretToEnd, uid } from '@/utils/editor/helpers';
+import Box from "@mui/material/Box"
 
 interface Block {
   id: string;
@@ -61,8 +62,15 @@ const EditablePage: React.FC = () => {
   }, []);
 
   return (
-    <div className="Page">
-      {blocks.map((block, key) => (
+    <Box className="Page" sx={{
+      p: {xs: "16px", sm: "32px", },
+      pl: {xs: "calc(16px + 48px)", sm: "calc(32px + 48px)",},
+
+    }}>
+      <Box sx={{
+        // border: "1px solid black"
+      }}>
+        {blocks.map((block, key) => (
         <EditableBlock
           key={key}
           id={block.id}
@@ -73,7 +81,9 @@ const EditablePage: React.FC = () => {
           deleteBlock={deleteBlockHandler}
         />
       ))}
-    </div>
+      </Box>
+      
+    </Box>
   );
 };
 

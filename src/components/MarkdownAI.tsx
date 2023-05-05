@@ -1,7 +1,5 @@
 import React, {useState} from "react"
 import Box from "@mui/material/Box"
-import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "@/store";
 import TextField from "@mui/material/TextField"
 import Paper from "@mui/material/Paper"
 import Typography from "@mui/material/Typography"
@@ -13,48 +11,11 @@ import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "@/store";
 import { appActions } from "@/store/app-slice";
-
-const sectionsData = [
-    "description", "sub description", "technologies", "installation", "features",
-    "screenshots", "setup", "usage", "project status",
-    "contact",  "roadmap", 'contribution', "contributors", "license",
-]
-
-const typesData = [
-    "Website", "Package or Library", "Design", "App", "Component Library", "API or Backend Service", "Documentation", "Data Analysis or Visualization", "Machine Learning or AI", "Game", "DevOps or Infrastructure", "Educational or Tutorial", "Open Source Contribution", "Research or Academic"
-]
-
-const licenseData = [
-    { "name": "MIT License", "acronym": "MIT" },
-    { "name": "GNU General Public License v3.0", "acronym": "GPLv3" },
-    { "name": "Apache License 2.0", "acronym": "Apache-2.0" },
-    { "name": "BSD 3-Clause License", "acronym": "BSD-3-Clause" },
-    { "name": "BSD 2-Clause License", "acronym": "BSD-2-Clause" },
-    { "name": "GNU Lesser General Public License v3.0", "acronym": "LGPLv3" },
-    { "name": "Mozilla Public License 2.0", "acronym": "MPL-2.0" },
-    { "name": "Creative Commons Attribution 4.0 International", "acronym": "CC BY 4.0" },
-    { "name": "Eclipse Public License 2.0", "acronym": "EPL-2.0" },
-    { "name": "GNU Affero General Public License v3.0", "acronym": "AGPLv3" },
-    { "name": "The Unlicense", "acronym": "Unlicense" },
-    { "name": "Boost Software License 1.0", "acronym": "BSL-1.0" },
-    { "name": "Creative Commons Zero v1.0 Universal", "acronym": "CC0" },
-    { "name": "ISC License", "acronym": "ISC" }
-  ]
-
-
-
-// interface MarkdownTextInterface {
-//     id: string
-// }
-
-
-
-type ContributorType = {
-    name: string;
-    link?: string;
-    role?: string;
-}
+import { README_SECTION_DATA, README_TYPES_DATA, README_LICENSE_DATA, } from "@/utils/data"
+import { ContributorType } from "@/utils/data.types"
 
 interface MarkdownAIInterface {
   onGetMarkdown: () => void
@@ -150,8 +111,8 @@ const MarkdownAI = ({onGetMarkdown}: MarkdownAIInterface) => {
   }
 
   const handleAddSection = (index: number) => {
-    if (!sections.includes(sectionsData[index])) {
-        setSections(prev => [...prev, sectionsData[index]])
+    if (!sections.includes(README_SECTION_DATA[index])) {
+        setSections(prev => [...prev, README_SECTION_DATA[index]])
     }
     
   }
@@ -223,7 +184,7 @@ const MarkdownAI = ({onGetMarkdown}: MarkdownAIInterface) => {
         <MenuItem value={0}>
           <em>None</em>
         </MenuItem>
-        {typesData.map((type, index) => {
+        {README_TYPES_DATA.map((type, index) => {
             return <MenuItem key={index} value={index + 1}>{type}</MenuItem>
         })}
     
@@ -261,7 +222,7 @@ const MarkdownAI = ({onGetMarkdown}: MarkdownAIInterface) => {
         label="License"
         onChange={handleChangeLicense}
       >
-       {licenseData.map((lic, index) => {
+       {README_LICENSE_DATA.map((lic, index) => {
         return <MenuItem key={index} value={index}>{lic.acronym}</MenuItem>
        })}
       </Select>
@@ -314,7 +275,7 @@ const MarkdownAI = ({onGetMarkdown}: MarkdownAIInterface) => {
             
         
         <Typography>Must Include: </Typography>
-        {sectionsData.map((section, index) => {
+        {README_SECTION_DATA.map((section, index) => {
                 return <Paper key={index} elevation={2} onClick={() => { handleAddSection(index) }} sx={{
                     bgcolor: sections.includes(section) ? "blue" : "",
                     display: "inline-block",

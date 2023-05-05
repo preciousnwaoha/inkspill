@@ -1,9 +1,11 @@
+import { BlockType } from "@/utils/data.types";
+import { uid } from "@/utils/helpers";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface MarkdownInterface {
     text: string,
     id: string,
-    name: string,
+    title: string,
 }
 
 export interface appState {
@@ -13,7 +15,8 @@ export interface appState {
     templates: {
         name: string,
         markdown: string,
-    }[]
+    }[],
+    blocks: BlockType[]
 }
 
 const initialState: appState = {
@@ -22,9 +25,12 @@ const initialState: appState = {
     markdown: {
         text: "",
         id: "",
-        name: "",
+        title: "",
     },
-    templates: []
+    templates: [],
+    blocks: [
+        { id: uid(), html: '', tag: 'div' },
+    ],
 }
 
 
@@ -48,6 +54,9 @@ const appSlice = createSlice( {
             markdown: string
         }[]>) {
             state.templates = action.payload
+        },
+        updateBlocks(state, action: PayloadAction<BlockType[]>){
+            state.blocks = action.payload
         }
     }
 })

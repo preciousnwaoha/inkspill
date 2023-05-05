@@ -1,26 +1,23 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { matchSorter } from "match-sorter";
-import { SUPPORTED_BLOCKS, MENU_HEIGHT } from "@/utils/editor/data";
+import { SUPPORTED_TAGS, MENU_HEIGHT } from "@/utils/editor/data";
 import Box from "@mui/material/Box"
 
+interface SelectMenu2Props {
+  position: { x: number | null; y: number | null };
+  onSelect: (tag: string) => void;
+  close: () => void;
+}
 
-interface SelectMenuItem {
+interface SelectMenu2Item {
   id: string;
-  content: string[];
   tag: string;
   label: string;
 }
 
-interface SelectMenuProps {
-  position: { x: number | null; y: number | null };
-  onSelect: (block: SelectMenuItem) => void;
-  close: () => void;
-}
-
-
-const SelectMenu: React.FC<SelectMenuProps> = ({ position, onSelect, close }) => {
+const SelectMenu2: React.FC<SelectMenu2Props> = ({ position, onSelect, close }) => {
   const [command, setCommand] = useState("");
-  const [items, setItems] = useState<SelectMenuItem[]>(SUPPORTED_BLOCKS);
+  const [items, setItems] = useState<SelectMenu2Item[]>(SUPPORTED_TAGS);
   const [selectedItem, setSelectedItem] = useState(0);
 
   useEffect(() => {
@@ -28,21 +25,18 @@ const SelectMenu: React.FC<SelectMenuProps> = ({ position, onSelect, close }) =>
       switch (e.key) {
         case "Enter":
           e.preventDefault();
-          onSelect(items[selectedItem]);
+          onSelect(items[selectedItem].tag);
           break;
         case "Backspace":
           if (!command) close();
           setCommand(command.substring(0, command.length - 1));
           break;
         case "ArrowUp":
-          // e.preventDefault();
-          let prevSelected = selectedItem === 0 ? items.length - 1 : selectedItem - 1;
+          e.preventDefault();
+          const prevSelected = selectedItem === 0 ? items.length - 1 : selectedItem - 1;
           setSelectedItem(prevSelected);
           break;
         case "ArrowDown":
-          let oldSelected = selectedItem === items.length ? 0 : selectedItem + 1;
-          setSelectedItem(oldSelected);
-          break;
         case "Tab":
           e.preventDefault();
           const nextSelected = selectedItem === items.length - 1 ? 0 : selectedItem + 1;
@@ -61,7 +55,7 @@ const SelectMenu: React.FC<SelectMenuProps> = ({ position, onSelect, close }) =>
   }, [command, items, selectedItem, onSelect, close]);
 
   useEffect(() => {
-    const matchedItems = matchSorter(SUPPORTED_BLOCKS, command.replace("/", ""), { keys: ["tag"] });
+    const matchedItems = matchSorter(SUPPORTED_TAGS, command.replace("/", ""), { keys: ["tag"] });
     setItems(matchedItems);
   }, [command]);
 
@@ -70,7 +64,7 @@ const SelectMenu: React.FC<SelectMenuProps> = ({ position, onSelect, close }) =>
   }
 
   const x = position.x;
-  const y = (position.y - MENU_HEIGHT + 64 + 8) - 32;
+  const y = (position.y - MENU_HEIGHT + 64) - 32 ;
   const positionAttributes = { top: y, left: x };
 
   const menuWrapperStyles: React.CSSProperties = {
@@ -95,11 +89,11 @@ const SelectMenu: React.FC<SelectMenuProps> = ({ position, onSelect, close }) =>
   }
 
   return (
-    <div className="SelectMenu" style={menuWrapperStyles}>
+    <div className="SelectMenu2" style={menuWrapperStyles}>
       <div className="Items" style={menuStyles}>
         <h5 style={{
                   fontWeight: 400,
-                  fontSize: "0.75rem",
+                  fontSize: "0.65rem",
                   margin: "8px 0",
                   padding: "0 8px"
                 }}>Basic Blocks</h5>
@@ -111,12 +105,11 @@ const SelectMenu: React.FC<SelectMenuProps> = ({ position, onSelect, close }) =>
               key={key}
               role="button"
               tabIndex={0}
-              onClick={() => onSelect(item)}
+              onClick={() => onSelect(item.tag)}
               sx={{
                 "&:hover": {
                   backgroundColor: "#f6f5f4",
                 },
-                backgroundColor: isSelected ? "#f6f5f4" : "",
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
@@ -159,4 +152,4 @@ const SelectMenu: React.FC<SelectMenuProps> = ({ position, onSelect, close }) =>
   );
 };
 
-export default SelectMenu;
+export default SelectMenu2;

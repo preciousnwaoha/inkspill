@@ -17,15 +17,27 @@ const MarkdownNew = ({onHandleNew}: MarkdownNewInterface) => {
 
   return (
     <Box sx={{
-      border: "1px solid black",
-      height: {sm: "calc(100vh - 64px)"},
+      // border: "1px solid black",
+      height: "100%",
       display: "flex",
+      flexDirection: "column",
       alignItems: "center",
       justifyContent: "center"
       }}>
-      
-      {["Create AI Readme", "Use Template", "Start Blank"].map((type, index) => {
-        return <Paper key={index} elevation={0} variant="outlined" sx={{
+
+        <Typography variant="h2" sx={{
+          textAlign: "center",
+          mb: 4,
+        }}>How would you like to start?</Typography>
+
+        <Box sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center"
+        }}>
+
+{["Create AI Readme", "Use Template", "Start Blank"].map((type, index) => {
+        return <Paper key={index} elevation={2}  sx={{
           p: 2,
           width: {xs: "80px", sm: "120px"},
           height: {xs: "80px", sm: "120px"},
@@ -33,11 +45,17 @@ const MarkdownNew = ({onHandleNew}: MarkdownNewInterface) => {
           display: "flex",
           alignItems: "center",
           cursor: "pointer",
+          borderRadius: "8px",
+          outline: "1px solid #f6f5f4"
   
         }} onClick={() => {handleSelectType(index)}}>
           {type}
         </Paper>
       })}
+
+        </Box>
+      
+     
       
       
     </Box>

@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import ContentEditable, { ContentEditableEvent } from 'react-contenteditable';
-import { setCaretToEnd, getCaretCoordinates } from '@/utils/editor/helpers';
+import { uid, setCaretToEnd, getCaretCoordinates } from '@/utils/editor/helpers';
 import SelectMenu from "./SelectMenu"
 import Box from "@mui/material/Box"
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
@@ -14,6 +14,8 @@ interface EditableBlockProps {
   updatePage: (data: { id: string; html: string; tag: string }) => void;
   addBlock: (data: { id: string; ref: HTMLElement }) => void;
   deleteBlock: (data: { id: string; ref: HTMLElement }) => void;
+  addBlocks:  (data: { id: string; ref: HTMLElement }, blocks: { id: string; html: string; tag: string }[]) => void;
+  onHoverItem: (position: {x: number; y: number} | null) => void;
 }
 
 
@@ -24,6 +26,8 @@ const EditableBlock: React.FC<EditableBlockProps> = ({
   updatePage,
   addBlock,
   deleteBlock,
+  addBlocks,
+  onHoverItem,
 }) => {
   const contentEditable = useRef<HTMLElement>(null);
   const [htmlBackup, setHtmlBackup] = useState<string | null>(null);
@@ -42,7 +46,12 @@ const EditableBlock: React.FC<EditableBlockProps> = ({
   const [hover, setHover] = useState(false)
 
   const toggleHover = () => {
+    // console.log(contentEditable.current?.getClientRects()[0]!)
+    const rect = contentEditable.current?.getClientRects()[0]!
+    const position = !hover ? {x: rect.left, y: rect.top}: null
+    onHoverItem(position)
     setHover(prev => !prev)
+    
   }
 
   
@@ -55,11 +64,11 @@ const EditableBlock: React.FC<EditableBlockProps> = ({
 
   useEffect(() => {
     updatePage({ id, html, tag });
-    console.log({ id, html, tag })
+    // console.log({ id, html, tag })
   }, [html, tag, id, updatePage]);
 
   const onChangeHandler = (e: ContentEditableEvent) => {
-    console.log("e.target.value: ", e.target.value)
+    // console.log("e.target.value: ", e.target.value)
     setHtml(e.target.value);
   };
 
@@ -69,33 +78,55 @@ const EditableBlock: React.FC<EditableBlockProps> = ({
   const onKeyDownHandler = (e: React.KeyboardEvent) => {
     // Get the current text content of the ContentEditable component
   const currentHtml = e.currentTarget.textContent || '';
+  
+  const previousBlock = contentEditable.current?.previousElementSibling
+  const nextBlock = contentEditable.current?.nextElementSibling
 
-    if (e.key === '/') {
-      setHtmlBackup(html);
-    }
-    if (e.key === 'Enter') {
-      if (previousKey !== 'Shift') {
-        e.preventDefault();
-        addBlock({
-          id,
-          ref: contentEditable.current!,
-        });
-      }
-    }
-
-    console.log({ currentHtml }); // Use currentHtml instead of html
-    if ((e.key === 'Backspace')) {
-      if (currentHtml === "" ) {
-        console.log("e red", {currentHtml})
-        // Check if the current block is not the first block
-        if (contentEditable.current?.previousElementSibling) {
-          e.preventDefault();
-          deleteBlock({
-            id,
-            ref: contentEditable.current!,
-          });
+    switch(e.key) {
+      case "/":
+        setHtmlBackup(html);
+          break;
+      case "Enter":
+        if (!selectMenuIsOpen) {
+          if (previousKey !== 'Shift') {
+            e.preventDefault();
+            addBlock({
+              id,
+              ref: contentEditable.current!,
+            });
+          }
         }
-      }
+          break;
+      case "Backspace":
+        if (currentHtml === "" ) {
+          // Check if the current block is not the first block
+          if (contentEditable.current?.previousElementSibling) {
+            e.preventDefault();
+            deleteBlock({
+              id,
+              ref: contentEditable.current!,
+            });
+          }
+        }
+          break;
+      case "ArrowUp":
+        e.preventDefault()
+          // Check if the current block is not the first block
+          if (previousBlock && !selectMenuIsOpen) {
+            setCaretToEnd(previousBlock as HTMLElement);
+            (previousBlock as HTMLElement).focus();
+          }
+        
+          break;
+      case "ArrowDown":
+        e.preventDefault()
+        // Check if the current block is not the first block
+        if (nextBlock && !selectMenuIsOpen) {
+          setCaretToEnd(nextBlock as HTMLElement);
+          (nextBlock as HTMLElement).focus();
+        }
+      
+        break;
     }
     setPreviousKey(e.key);
   };
@@ -112,7 +143,7 @@ const EditableBlock: React.FC<EditableBlockProps> = ({
 
   const openSelectMenuHandler = () => {
     const { x, y } = getCaretCoordinates();
-    console.log({x, y})
+    // console.log({x, y})
     setSelectMenuIsOpen(true)
     setSelectMenuPosition({ x: x!, y: y! })
     document.addEventListener("click", closeSelectMenuHandler);
@@ -128,9 +159,41 @@ const EditableBlock: React.FC<EditableBlockProps> = ({
   }
 
 
-  const tagSelectionHandler = (tag: string) => {
-    setTag(tag)
-    setHtml(htmlBackup!)
+  const blockSelectionHandler = (block: {id: string;
+    content: string[];
+    tag: string;
+    label: string;}) => {
+    
+    const blocks = block.content.map(cnt => {
+      return {
+        id: uid(),
+        html: cnt,
+        tag: "div",
+      }
+    })
+
+    if ((html.trim() === "") || (html.trim() === "/")) {
+      setTag(blocks[0].tag)
+      setHtml(blocks[0].html)
+      addBlocks(
+        {
+          id,
+          ref: contentEditable.current!,
+        },
+        blocks.slice(1)
+      )
+    } else {
+      setHtml(prev => prev.slice(0, -1))
+      addBlocks(
+        {
+          id,
+          ref: contentEditable.current!,
+        },
+        blocks
+      )
+    }
+    
+    
     setTimeout(() => {
       setCaretToEnd(contentEditable.current!);
     }, 0);
@@ -143,12 +206,15 @@ const EditableBlock: React.FC<EditableBlockProps> = ({
   let blockStyle = {
     margin: "0",
     marginBottom: "4px",
-    backgroundColor: hover ? '#f7f7f7' : 'transparent',
-    border: "none",
+    backgroundColor: hover ?  '#f7f7f7' : 'transparent',
+    borderRadius: "4px",
+    // border: "1px solid black",
     outline: "none",
     position: "relative",
-
+    userSelect: "all"
   };
+
+  // const newH = html + "<div>Hope</div>"
   
 
   return (
@@ -156,7 +222,7 @@ const EditableBlock: React.FC<EditableBlockProps> = ({
     {selectMenuIsOpen && (
           <SelectMenu
             position={selectMenuPosition}
-            onSelect={tagSelectionHandler}
+            onSelect={blockSelectionHandler}
             close={closeSelectMenuHandler}
           />
         )}
@@ -165,7 +231,7 @@ const EditableBlock: React.FC<EditableBlockProps> = ({
       className="Block"
       innerRef={contentEditable}
       html={html}
-      tagName={tag}
+      tagName={"div"}
       onChange={onChangeHandler}
       onKeyDown={onKeyDownHandler}
       onKeyUp={onKeyUpHandler}

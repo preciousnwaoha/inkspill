@@ -17,8 +17,8 @@ const MarkdownRender = ( ) => {
   const [result, setResult] = useState<any>();
   const [htmlContent, setHtmlContent] = useState<string>('');
 
-  const {markdown} = app
-  const {text  } = markdown
+  const {blocks, markdown} = app
+  const text = blocks.map(blocks => blocks.html).join("\n")
 
   const markdownString = text
 
@@ -85,10 +85,22 @@ const MarkdownRender = ( ) => {
 
     return <Box sx={{
         
-        p: 2,
+      p: {xs: "16px", sm: "32px", },
+      pl: {xs: "calc(16px + 48px)", sm: "calc(32px + 48px)",},
+      position: "relative"
     }}>
         {/* {!loading && <Box dangerouslySetInnerHTML={{ __html: result }}></Box>} */}
-        {loading && <Box>Loading</Box>}
+        {loading && <Box sx={{
+          borderRadius: "4px",
+          outline: "1px solid #cacaca",
+          bgcolor: "white",
+          position :"absolute",
+          top: "1rem",
+          left: "1rem",
+          px: "10px",
+          fontSize: "0.7rem",
+        }}>Loading...</Box>}
+        
         {/* Render the HTML content */}
       <Box dangerouslySetInnerHTML={{ __html: htmlContent }} ></Box>
         {/* <Button onClick={doYou}>Markdown</Button> */}

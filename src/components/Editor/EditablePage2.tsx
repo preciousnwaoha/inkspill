@@ -1,12 +1,9 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import EditableBlock from './EditableBlock';
+import React, { useState, useCallback } from 'react';
+import EditableBlock2 from './EditableBlock2';
 import { setCaretToEnd, uid } from '@/utils/editor/helpers';
 import Box from "@mui/material/Box"
 import AddRoundedIcon from '@mui/icons-material/AddRounded';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
-import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "@/store";
-import { appActions } from "@/store/app-slice";
 
 interface Block {
   id: string;
@@ -19,21 +16,14 @@ interface CurrentBlock {
   ref: HTMLElement;
 }
 
-const EditablePage: React.FC = () => {
-
-  const dispatch = useDispatch()
-    // const app = useSelector((state: RootState) => state.app)
-    // const {blocks: blocky} = app
-
+const EditablePage2: React.FC = () => {
   const [blocks, setBlocks] = useState<Block[]>([
-    { id: uid(), html: '', tag: 'div' },
+    { id: uid(), html: '', tag: 'p' },
   ]);
   const [hoverItemPosition, setHoverItemPosition] = useState<{
     x: number,
     y: number
   } | null>(null)
-  const [caretPos, setCaretPos] = useState<number>(0)
-
 
 
   const updatePageHandler = useCallback((updatedBlock: Block) => {
@@ -50,25 +40,11 @@ const EditablePage: React.FC = () => {
   }, []);
 
   const addBlockHandler = useCallback((currentBlock: CurrentBlock) => {
-    const newBlock = { id: uid(), html: '', tag: 'div' };
+    const newBlock = { id: uid(), html: '', tag: 'p' };
     setBlocks((prevBlocks) => {
       const index = prevBlocks.map((b) => b.id).indexOf(currentBlock.id);
       const updatedBlocks = [...prevBlocks];
       updatedBlocks.splice(index + 1, 0, newBlock);
-      return updatedBlocks;
-    });
-    setTimeout(() => {
-      (currentBlock.ref.nextElementSibling as HTMLElement)?.focus();
-    }, 0);
-  }, []);
-
-  
-  const addBlocksHandler = useCallback((currentBlock: CurrentBlock, blocks: Block[]) => {
-    setBlocks((prevBlocks) => {
-      const index = prevBlocks.map((b) => b.id).indexOf(currentBlock.id);
-      const updatedBlocks = [...prevBlocks];
-      updatedBlocks.splice(index + 1, 0, ...blocks);
-      
       return updatedBlocks;
     });
     setTimeout(() => {
@@ -96,10 +72,6 @@ const EditablePage: React.FC = () => {
   const hoverItemHandler = (position: {x: number, y: number} | null ) => {
     setHoverItemPosition(position)
   }
-
-  useEffect(() => {
-    dispatch(appActions.updateBlocks(blocks))
-  }, [blocks])
 
 
   return (
@@ -129,11 +101,8 @@ const EditablePage: React.FC = () => {
         }} />
       </Box>}
 
-        <Box sx={{
-          userSelect: "all"
-        }}>
         {blocks.map((block, key) => (
-        <EditableBlock
+        <EditableBlock2
           key={key}
           id={block.id}
           tag={block.tag}
@@ -141,16 +110,12 @@ const EditablePage: React.FC = () => {
           updatePage={updatePageHandler}
           addBlock={addBlockHandler}
           deleteBlock={deleteBlockHandler}
-          addBlocks={addBlocksHandler}
           onHoverItem={hoverItemHandler}
-
         />
       ))}
-        </Box>
-       
       
     </Box>
   );
 };
 
-export default EditablePage;
+export default EditablePage2;

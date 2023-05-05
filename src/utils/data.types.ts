@@ -14,8 +14,17 @@ export type ListType = {
 }
 
 
-export interface EditableBlockType {
+export interface BlockType {
     html: string;
     tag: string;
     id: string;
   }
+
+
+
+
+export  type ContributorType = {
+    name: string;
+    link?: string;
+    role?: string;
+}

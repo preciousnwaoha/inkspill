@@ -40,10 +40,10 @@ export default function App() {
       <Box
         component="main"
         sx={{
-          mt: {sm: "64px", xs: "56px"},
+          mt: {sm: "45px", xs: "45px"},
           height: {
             xs: "auto",
-            sm: "calc(100vh - 64px)"
+            sm: "calc(100vh - 45px)"
           },
           overflow: { xs: "auto", md: "hidden" },
           // outline: "4px solid black",
